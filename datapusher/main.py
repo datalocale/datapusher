@@ -8,8 +8,20 @@ import jobs
 assert(jobs.push_to_datastore)
 
 
+def setup_sentry(app):
+    try:
+        from raven.contrib.flask import Sentry
+    except ImportError:
+        print('missing raven[flask] package, no sentry support')
+        return
+    # dsn information will be looked for in SENTRY_DSN environment variable.
+    sentry = Sentry()
+    sentry.init_app(app)
+
+
 def serve():
     web.init()
+    setup_sentry(web.app)
     web.app.run(web.app.config.get('HOST'), web.app.config.get('PORT'))
 
 
